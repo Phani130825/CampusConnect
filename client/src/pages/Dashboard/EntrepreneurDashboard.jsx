@@ -73,10 +73,10 @@ const EntrepreneurDashboard = () => {
         }
     };
 
-    const handleAnalyze = async (solutionId, description) => {
+    const handleAnalyze = async (solutionId, description, problemId) => {
         try {
             // Optimistic update to show loading state if needed, but here we just wait
-            const res = await axios.post('/api/ai/analyze-solution', { description });
+            const res = await axios.post('/api/ai/analyze-solution', { description, problemId });
 
             // Update the submissions state with the new AI analysis
             setSubmissions(prev => prev.map(sub =>
@@ -84,7 +84,7 @@ const EntrepreneurDashboard = () => {
             ));
         } catch (err) {
             console.error(err);
-            alert('AI Analysis failed');
+            alert('AI Analysis failed. Check if HUGGING_FACE_TOKEN is set in server/.env');
         }
     };
 
@@ -196,29 +196,32 @@ const EntrepreneurDashboard = () => {
                                             {/* AI Analysis Section */}
                                             <div className="mb-4">
                                                 {solution.aiAnalysis ? (
-                                                    <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-4">
-                                                        <div className="flex justify-between items-center mb-2">
-                                                            <h4 className="font-bold text-indigo-900 flex items-center gap-2">
-                                                                <span className="text-lg">🤖</span> AI Viability Score
+                                                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-5">
+                                                        <div className="flex justify-between items-center mb-3">
+                                                            <h4 className="font-semibold text-slate-800 flex items-center gap-2">
+                                                                <Code size={18} className="text-slate-500" />
+                                                                Semantic Relevance Analysis
                                                             </h4>
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="text-2xl font-black text-indigo-600">{solution.aiAnalysis.viabilityScore}/100</div>
-                                                                <span className="px-2 py-1 bg-white rounded text-xs font-bold text-indigo-800 border border-indigo-200">{solution.aiAnalysis.sentiment}</span>
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="text-xl font-bold text-slate-900">{solution.aiAnalysis.viabilityScore}%</div>
+                                                                <span className="px-3 py-1 bg-white rounded-md text-xs font-semibold text-slate-700 border border-slate-200">
+                                                                    {solution.aiAnalysis.sentiment}
+                                                                </span>
                                                             </div>
                                                         </div>
-                                                        <p className="text-indigo-800 text-sm mb-2">{solution.aiAnalysis.analysisSummary}</p>
-                                                        <div className="flex gap-2">
-                                                            {solution.aiAnalysis.keyStrengths.map((tag, i) => (
-                                                                <span key={i} className="text-xs bg-white text-indigo-600 px-2 py-1 rounded border border-indigo-200 font-medium">#{tag}</span>
-                                                            ))}
+                                                        <p className="text-slate-600 text-sm mb-3 leading-relaxed">
+                                                            {solution.aiAnalysis.analysisSummary}
+                                                        </p>
+                                                        <div className="flex items-center gap-2 text-xs text-slate-500">
+                                                            <span className="font-medium">Model:</span> sentence-transformers/all-MiniLM-L6-v2
                                                         </div>
                                                     </div>
                                                 ) : (
                                                     <button
-                                                        onClick={() => handleAnalyze(solution._id, solution.description)}
-                                                        className="text-sm font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-2 transition-colors"
+                                                        onClick={() => handleAnalyze(solution._id, solution.description, activeProblem._id)}
+                                                        className="text-sm font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-2 transition-colors border border-blue-200 bg-blue-50 px-4 py-2 rounded-lg hover:bg-blue-100"
                                                     >
-                                                        <span>✨</span> Generate AI Analysis
+                                                        Analyze Relevance (AI)
                                                     </button>
                                                 )}
                                             </div>

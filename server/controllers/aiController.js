@@ -1,45 +1,104 @@
-// Simulated AI Controller
-// In a real production app, this would call OpenAI, Claude, or a local Python ML service
+const axios = require('axios');
+const Problem = require('../models/Problem');
 
-const analyzeText = (text) => {
-    // Simple heuristic analysis for demo purposes
-    const score = Math.floor(Math.random() * (95 - 60) + 60); // Random score between 60-95
+// Helper to compute cosine similarity
+const cosineSimilarity = (vecA, vecB) => {
+    const dotProduct = vecA.reduce((acc, val, i) => acc + val * vecB[i], 0);
+    const magnitudeA = Math.sqrt(vecA.reduce((acc, val) => acc + val * val, 0));
+    const magnitudeB = Math.sqrt(vecB.reduce((acc, val) => acc + val * val, 0));
+    return dotProduct / (magnitudeA * magnitudeB);
+};
 
-    const buzzwords = ['scalable', 'ai', 'blockchain', 'secure', 'optimized', 'cloud', 'data', 'efficient', 'innovative'];
-    const foundKeywords = buzzwords.filter(word => text.toLowerCase().includes(word));
+// HF Inference API URL
+const HF_API_URL = "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2";
 
-    let sentiment = "Neutral";
-    if (score > 85) sentiment = "Highly Positive";
-    else if (score > 70) sentiment = "Positive";
-    else sentiment = "Moderate";
+const getEmbeddings = async (texts) => {
+    if (!process.env.HUGGING_FACE_TOKEN) {
+        throw new Error("HUGGING_FACE_TOKEN is missing");
+    }
 
-    return {
-        viabilityScore: score,
-        sentiment,
-        keyStrengths: foundKeywords.length > 0 ? foundKeywords.map(k => k.charAt(0).toUpperCase() + k.slice(1)) : ['Clarity', 'Feasibility'],
-        analysisSummary: `The proposed solution demonstrates ${sentiment.toLowerCase()} potential. It addresses the core problem with a viability score of ${score}/100. The approach appears technically sound${foundKeywords.length > 0 ? `, leveraging key technologies like ${foundKeywords.join(', ')}` : '.'}. Recommended for further technical review.`
-    };
+    try {
+        const response = await axios.post(
+            HF_API_URL,
+            { inputs: texts, options: { wait_for_model: true } },
+            {
+                headers: { Authorization: `Bearer ${process.env.HUGGING_FACE_TOKEN}` }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("HF API Error:", error.response?.data || error.message);
+        throw error;
+    }
 };
 
 exports.analyzeSolution = async (req, res) => {
     try {
-        const { description } = req.body;
+        const { description, problemId } = req.body;
 
-        // Simulate AI processing delay
-        setTimeout(() => {
-            const analysis = analyzeText(description);
-            res.json(analysis);
-        }, 1500);
+        if (!problemId) {
+            return res.status(400).json({ message: "Problem ID is required for comparison" });
+        }
+
+        const problem = await Problem.findById(problemId);
+        if (!problem) {
+            return res.status(404).json({ message: "Problem not found" });
+        }
+
+        // Get embeddings for both texts
+        // We compare the solution description against the Problem Title + Description for context
+        const problemText = `${problem.title}. ${problem.description}`;
+        const output = await getEmbeddings([description, problemText]);
+
+        // HF Feature Extraction returns a list of arrays (embeddings)
+        // If the model is not loaded, it might fail initially, but 'wait_for_model: true' helps.
+
+        if (!Array.isArray(output) || output.length !== 2) {
+            // Fallback for demo if API fails or token is invalid
+            console.warn("Using heuristic fallback due to API issue");
+            // ... existing heuristic logic could go here, but user asked for REAL implementation.
+            // We will throw error to prompt user to fix token if that's the issue.
+            if (output.error) throw new Error(output.error);
+            throw new Error("Invalid response from AI Model");
+        }
+
+        const solutionVector = output[0];
+        const problemVector = output[1];
+
+        const similarity = cosineSimilarity(solutionVector, problemVector);
+        // Normalize score to 0-100
+        const score = Math.round(similarity * 100);
+
+        // Determine qualitative metrics based on score
+        let sentiment = "Neutral";
+        let feedback = "relevance is moderate.";
+
+        if (score > 75) {
+            sentiment = "High Fit";
+            feedback = "The solution appears strongly aligned with the problem requirements semantics.";
+        } else if (score > 50) {
+            sentiment = "Moderate Fit";
+            feedback = "The solution has some semantic overlap with the problem space.";
+        } else {
+            sentiment = "Low Fit";
+            feedback = "The solution description may need more specific details related to the problem.";
+        }
+
+        res.json({
+            viabilityScore: score,
+            sentiment,
+            analysisSummary: `Semantic Compatibility: ${score}%. ${feedback}`,
+            keyStrengths: ["Semantic Alignment", "Context Matching"] // Since this model doesn't do keyword extraction
+        });
 
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).json({ message: 'AI Analysis Failed. Ensure valid HUGGING_FACE_TOKEN in .env' });
     }
 };
 
 exports.matchSkills = async (req, res) => {
-    // API to match a student's skills against a problem
-    // This could also be "AI" powered
+    // Keep existing logic for now, or could use embeddings here too
     try {
         const { studentSkills, problemSkills } = req.body;
         const intersection = studentSkills.filter(skill =>
