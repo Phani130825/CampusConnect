@@ -35,7 +35,11 @@ console.log('Problem Routes Stack:', problemRoutes.stack ? problemRoutes.stack.l
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/problems', problemRoutes);
 app.use('/api/solutions', require('./routes/solutionRoutes'));
-app.use('/api/ai', require('./routes/aiRoutes'));
+
+console.log('Loading AI Routes...');
+const aiRoutes = require('./routes/aiRoutes');
+console.log('AI Routes loaded, type:', typeof aiRoutes);
+app.use('/api/ai', aiRoutes);
 
 app.get('/api/test', (req, res) => res.send('API Test Working'));
 
@@ -51,4 +55,6 @@ app.use((req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    console.log('Routes loaded and server ready.');
+    console.log('AI Controller configured with new HF Router API.');
 });

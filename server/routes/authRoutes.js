@@ -8,5 +8,6 @@ router.post('/login', login);
 router.post('/logout', logout);
 router.get('/me', authMiddleware, getMe);
 router.get('/investors', authMiddleware, getInvestors);
+router.put('/profile', authMiddleware, require('../controllers/authController').updateProfile);
 
 module.exports = router;

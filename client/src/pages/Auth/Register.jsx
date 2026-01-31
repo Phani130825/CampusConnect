@@ -10,6 +10,8 @@ const Register = () => {
         role: 'student',
         // Dynamic fields mapping
         university: '', // for student
+        skills: '',     // for student
+        bio: '',        // for student
         companyName: '', // for entrepreneur
         organization: '', // for investor
     });
@@ -25,7 +27,12 @@ const Register = () => {
         e.preventDefault();
         try {
             const profile = {};
-            if (formData.role === 'student') profile.university = formData.university;
+            if (formData.role === 'student') {
+                profile.university = formData.university;
+                profile.bio = formData.bio;
+                // Split skills string into array
+                profile.skills = formData.skills ? formData.skills.split(',').map(s => s.trim()) : [];
+            }
             if (formData.role === 'entrepreneur') profile.companyName = formData.companyName;
             if (formData.role === 'investor') profile.portfolio = formData.organization;
 
@@ -95,16 +102,38 @@ const Register = () => {
 
                         {/* Conditional Fields */}
                         {formData.role === 'student' && (
-                            <div>
-                                <input
-                                    name="university"
-                                    type="text"
-                                    className="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                                    placeholder="University / College"
-                                    value={formData.university}
-                                    onChange={handleChange}
-                                />
-                            </div>
+                            <>
+                                <div>
+                                    <input
+                                        name="university"
+                                        type="text"
+                                        className="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                                        placeholder="University / College"
+                                        value={formData.university}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div>
+                                    <input
+                                        name="skills"
+                                        type="text"
+                                        className="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                                        placeholder="Skills (React, Node, AI...)"
+                                        value={formData.skills}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div>
+                                    <textarea
+                                        name="bio"
+                                        rows="3"
+                                        className="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                                        placeholder="Short Bio / Interests"
+                                        value={formData.bio}
+                                        onChange={handleChange}
+                                    ></textarea>
+                                </div>
+                            </>
                         )}
                         {formData.role === 'entrepreneur' && (
                             <div>
