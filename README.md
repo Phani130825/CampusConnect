@@ -1,17 +1,17 @@
-# Campus Connect 🚀
+# Campus Connect
 
 **Campus Connect** is a full-stack web platform that bridges the gap between **Students**, **Entrepreneurs**, and **Investors**. The platform enables entrepreneurs to post real-world problems, students to propose innovative solutions, and investors to discover promising talent and projects.
 
-## 🌟 Features
+## Features
 
-### 👨‍💼 For Entrepreneurs
+### For Entrepreneurs
 
 - **Post Problems**: Share business challenges and real-world problems that need solutions
 - **Review Solutions**: Evaluate student-submitted solutions with AI-powered analysis
 - **Connect with Talent**: Find skilled students who can solve your business problems
 - **Track Submissions**: Monitor and manage all solutions submitted to your problems
 
-### 🎓 For Students
+### For Students
 
 - **Explore Problems**: Browse real-world business challenges across various domains
 - **Submit Solutions**: Propose innovative solutions to problems that match your skills
@@ -19,21 +19,21 @@
 - **AI-Powered Recommendations**: Get personalized problem recommendations based on your skills
 - **Get Discovered**: Connect with entrepreneurs and investors looking for talent
 
-### 💼 For Investors
+### For Investors
 
 - **Discover Talent**: Find promising students and emerging entrepreneurs
 - **View Solutions**: Review innovative solutions to real-world problems
 - **Track Trends**: Explore problems and solutions across different industries
 - **Network**: Connect with the next generation of innovators
 
-### 🤖 AI-Powered Features
+### AI-Powered Features
 
 - **Smart Recommendations**: Machine learning-based problem recommendations for students
 - **Solution Analysis**: AI-powered similarity analysis between problems and solutions
 - **Skill Matching**: Intelligent matching of student skills to problem requirements
 - **Embedding-Based Search**: Semantic search using sentence transformers
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 
@@ -61,7 +61,7 @@
 - **Sentence Transformers** - all-MiniLM-L6-v2 model
 - **Cosine Similarity** - Semantic similarity matching
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have the following installed:
 
@@ -70,7 +70,7 @@ Before you begin, ensure you have the following installed:
 - **MongoDB** (local installation or MongoDB Atlas account)
 - **Git**
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Clone the Repository
 
@@ -246,7 +246,7 @@ Connectors/
 └── README.md                   # This file
 ```
 
-## 🔑 API Endpoints
+## API Endpoints
 
 ### Authentication
 
@@ -277,7 +277,7 @@ Connectors/
 - `POST /api/ai/analyze-solution` - Analyze solution using AI
 - `POST /api/ai/recommend-problems` - Get personalized problem recommendations
 
-## 👥 User Roles
+## User Roles
 
 ### Student
 
@@ -299,7 +299,7 @@ Connectors/
 - Can discover promising projects and talent
 - Can connect with entrepreneurs and students
 
-## 🔐 Authentication
+## Authentication
 
 The application uses JWT (JSON Web Tokens) for authentication:
 
@@ -307,14 +307,14 @@ The application uses JWT (JSON Web Tokens) for authentication:
 - Protected routes require valid authentication
 - Role-based access control (RBAC) for different user types
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Run tests (if configured)
 npm test
 ```
 
-## 🔧 Configuration
+## Configuration
 
 ### Tailwind CSS
 
@@ -335,7 +335,7 @@ Code linting configuration:
 
 - `client/eslint.config.js`
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please follow these steps:
 
@@ -346,11 +346,11 @@ Contributions are welcome! Please follow these steps:
 5. Push to the branch (`git push origin feature/YourFeature`)
 6. Open a Pull Request
 
-## 📝 License
+## License
 
 This project is licensed under the ISC License.
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### MongoDB Connection Issues
 
@@ -373,11 +373,11 @@ This project is licensed under the ISC License.
 - Check if you have API quota remaining
 - Verify the model endpoint is accessible
 
-## 📧 Contact
+## Contact
 
 For questions or support, please open an issue in the repository.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Hugging Face for providing the inference API
 - MongoDB for the database platform
