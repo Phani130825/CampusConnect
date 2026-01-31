@@ -86,7 +86,10 @@ const InvestorDashboard = () => {
                                         <button className="px-6 py-2 border border-slate-300 rounded-lg font-medium text-slate-600 hover:bg-slate-50 transition">
                                             Skip
                                         </button>
-                                        <button className="px-6 py-2 bg-primary text-white rounded-lg font-bold shadow hover:bg-blue-700 transition flex items-center gap-2">
+                                        <button
+                                            onClick={() => window.open(`mailto:${solution.student?.email || ''}?subject=Interest in your solution for ${solution.problem?.title}&body=Hi ${solution.student?.name}, I saw your solution on Campus Connect...`)}
+                                            className="px-6 py-2 bg-primary text-white rounded-lg font-bold shadow hover:bg-blue-700 transition flex items-center gap-2"
+                                        >
                                             Connect <ArrowRight size={16} />
                                         </button>
                                     </div>

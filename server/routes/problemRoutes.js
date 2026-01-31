@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+console.log('Loading Problem Routes...');
 const authMiddleware = require('../middleware/authMiddleware');
 const { createProblem, getAllProblems, getMyProblems } = require('../controllers/problemController');
 

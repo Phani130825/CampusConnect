@@ -73,6 +73,21 @@ const EntrepreneurDashboard = () => {
         }
     };
 
+    const handleAnalyze = async (solutionId, description) => {
+        try {
+            // Optimistic update to show loading state if needed, but here we just wait
+            const res = await axios.post('/api/ai/analyze-solution', { description });
+
+            // Update the submissions state with the new AI analysis
+            setSubmissions(prev => prev.map(sub =>
+                sub._id === solutionId ? { ...sub, aiAnalysis: res.data } : sub
+            ));
+        } catch (err) {
+            console.error(err);
+            alert('AI Analysis failed');
+        }
+    };
+
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
     const handleSubmit = async (e) => {
@@ -177,6 +192,37 @@ const EntrepreneurDashboard = () => {
                                             </div>
 
                                             <p className="text-slate-700 mb-4 bg-slate-50 p-4 rounded-lg text-sm leading-relaxed">{solution.description}</p>
+
+                                            {/* AI Analysis Section */}
+                                            <div className="mb-4">
+                                                {solution.aiAnalysis ? (
+                                                    <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-4">
+                                                        <div className="flex justify-between items-center mb-2">
+                                                            <h4 className="font-bold text-indigo-900 flex items-center gap-2">
+                                                                <span className="text-lg">🤖</span> AI Viability Score
+                                                            </h4>
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="text-2xl font-black text-indigo-600">{solution.aiAnalysis.viabilityScore}/100</div>
+                                                                <span className="px-2 py-1 bg-white rounded text-xs font-bold text-indigo-800 border border-indigo-200">{solution.aiAnalysis.sentiment}</span>
+                                                            </div>
+                                                        </div>
+                                                        <p className="text-indigo-800 text-sm mb-2">{solution.aiAnalysis.analysisSummary}</p>
+                                                        <div className="flex gap-2">
+                                                            {solution.aiAnalysis.keyStrengths.map((tag, i) => (
+                                                                <span key={i} className="text-xs bg-white text-indigo-600 px-2 py-1 rounded border border-indigo-200 font-medium">#{tag}</span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => handleAnalyze(solution._id, solution.description)}
+                                                        className="text-sm font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-2 transition-colors"
+                                                    >
+                                                        <span>✨</span> Generate AI Analysis
+                                                    </button>
+                                                )}
+                                            </div>
+
 
                                             <div className="flex flex-wrap gap-4 mb-6 text-sm">
                                                 {solution.documentLink && <a href={solution.documentLink} target="_blank" className="text-primary hover:underline font-medium">View Document</a>}
