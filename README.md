@@ -345,4 +345,4 @@ For questions or support, please open an issue in the repository.
 
 ---
 
-**Built with ❤️ by the Campus Connect Team**
+
