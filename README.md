@@ -5,12 +5,14 @@
 ## 🌟 Features
 
 ### 👨‍💼 For Entrepreneurs
+
 - **Post Problems**: Share business challenges and real-world problems that need solutions
 - **Review Solutions**: Evaluate student-submitted solutions with AI-powered analysis
 - **Connect with Talent**: Find skilled students who can solve your business problems
 - **Track Submissions**: Monitor and manage all solutions submitted to your problems
 
 ### 🎓 For Students
+
 - **Explore Problems**: Browse real-world business challenges across various domains
 - **Submit Solutions**: Propose innovative solutions to problems that match your skills
 - **Showcase Skills**: Build your portfolio by solving real problems
@@ -18,12 +20,14 @@
 - **Get Discovered**: Connect with entrepreneurs and investors looking for talent
 
 ### 💼 For Investors
+
 - **Discover Talent**: Find promising students and emerging entrepreneurs
 - **View Solutions**: Review innovative solutions to real-world problems
 - **Track Trends**: Explore problems and solutions across different industries
 - **Network**: Connect with the next generation of innovators
 
 ### 🤖 AI-Powered Features
+
 - **Smart Recommendations**: Machine learning-based problem recommendations for students
 - **Solution Analysis**: AI-powered similarity analysis between problems and solutions
 - **Skill Matching**: Intelligent matching of student skills to problem requirements
@@ -32,6 +36,7 @@
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - **React 19** - Modern UI library
 - **Vite** - Fast build tool and dev server
 - **React Router DOM** - Client-side routing
@@ -41,6 +46,7 @@
 - **Axios** - HTTP client
 
 ### Backend
+
 - **Node.js** - JavaScript runtime
 - **Express 5** - Web application framework
 - **MongoDB** - NoSQL database
@@ -50,6 +56,7 @@
 - **Cookie Parser** - Cookie handling
 
 ### AI/ML
+
 - **Hugging Face Inference API** - Sentence transformers for embeddings
 - **Sentence Transformers** - all-MiniLM-L6-v2 model
 - **Cosine Similarity** - Semantic similarity matching
@@ -57,6 +64,7 @@
 ## 📋 Prerequisites
 
 Before you begin, ensure you have the following installed:
+
 - **Node.js** (v16 or higher)
 - **npm** or **yarn**
 - **MongoDB** (local installation or MongoDB Atlas account)
@@ -65,6 +73,7 @@ Before you begin, ensure you have the following installed:
 ## 🚀 Getting Started
 
 ### 1. Clone the Repository
+
 ```bash
 git clone <repository-url>
 cd Connectors
@@ -98,11 +107,13 @@ CLIENT_URL=http://localhost:5173
 ### 3. Install Dependencies
 
 #### Install Root Dependencies
+
 ```bash
 npm install
 ```
 
 #### Install Client Dependencies
+
 ```bash
 cd client
 npm install
@@ -110,6 +121,7 @@ cd ..
 ```
 
 #### Install Server Dependencies
+
 ```bash
 cd server
 npm install
@@ -119,17 +131,21 @@ cd ..
 ### 4. Database Setup
 
 #### Option 1: Local MongoDB
+
 Make sure MongoDB is running on your machine:
+
 ```bash
 mongod
 ```
 
 #### Option 2: MongoDB Atlas
+
 1. Create a free account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
 2. Create a new cluster
 3. Get your connection string and add it to the `.env` file
 
 #### Seed the Database (Optional)
+
 ```bash
 cd server
 node seed.js
@@ -141,22 +157,27 @@ cd ..
 #### Development Mode
 
 **Terminal 1 - Run Backend:**
+
 ```bash
 cd server
 npm run dev
 ```
+
 The server will start on `http://localhost:5000`
 
 **Terminal 2 - Run Frontend:**
+
 ```bash
 cd client
 npm run dev
 ```
+
 The client will start on `http://localhost:5173`
 
 #### Production Mode
 
 **Build the Client:**
+
 ```bash
 cd client
 npm run build
@@ -164,6 +185,7 @@ cd ..
 ```
 
 **Run the Server:**
+
 ```bash
 cd server
 npm start
@@ -227,12 +249,14 @@ Connectors/
 ## 🔑 API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/register` - Register a new user
 - `POST /api/auth/login` - Login user
 - `POST /api/auth/logout` - Logout user
 - `GET /api/auth/me` - Get current user profile
 
 ### Problems
+
 - `GET /api/problems` - Get all problems
 - `GET /api/problems/:id` - Get single problem
 - `POST /api/problems` - Create a new problem (Entrepreneur only)
@@ -240,6 +264,7 @@ Connectors/
 - `DELETE /api/problems/:id` - Delete a problem (Entrepreneur only)
 
 ### Solutions
+
 - `GET /api/solutions` - Get all solutions
 - `GET /api/solutions/:id` - Get single solution
 - `POST /api/solutions` - Submit a solution (Student only)
@@ -248,24 +273,28 @@ Connectors/
 - `DELETE /api/solutions/:id` - Delete a solution
 
 ### AI Features
+
 - `POST /api/ai/analyze-solution` - Analyze solution using AI
 - `POST /api/ai/recommend-problems` - Get personalized problem recommendations
 
 ## 👥 User Roles
 
 ### Student
+
 - Can view all problems
 - Can submit solutions to problems
 - Can view their submitted solutions
 - Receives AI-powered problem recommendations based on skills
 
 ### Entrepreneur
+
 - Can create, edit, and delete problems
 - Can view all solutions submitted to their problems
 - Can analyze solutions using AI
 - Can discover talented students
 
 ### Investor
+
 - Can view all problems and solutions
 - Can discover promising projects and talent
 - Can connect with entrepreneurs and students
@@ -273,6 +302,7 @@ Connectors/
 ## 🔐 Authentication
 
 The application uses JWT (JSON Web Tokens) for authentication:
+
 - Tokens are stored in HTTP-only cookies for security
 - Protected routes require valid authentication
 - Role-based access control (RBAC) for different user types
@@ -287,16 +317,22 @@ npm test
 ## 🔧 Configuration
 
 ### Tailwind CSS
+
 The project uses Tailwind CSS for styling. Configuration can be found in:
+
 - `client/tailwind.config.js`
 - `client/postcss.config.js`
 
 ### Vite
+
 Vite configuration for the React app:
+
 - `client/vite.config.js`
 
 ### ESLint
+
 Code linting configuration:
+
 - `client/eslint.config.js`
 
 ## 🤝 Contributing
@@ -317,18 +353,22 @@ This project is licensed under the ISC License.
 ## 🐛 Troubleshooting
 
 ### MongoDB Connection Issues
+
 - Ensure MongoDB is running locally or check your Atlas connection string
 - Verify network access in MongoDB Atlas (whitelist your IP)
 
 ### Port Already in Use
+
 - Change the PORT in the `.env` file
 - Kill the process using the port: `lsof -ti:5000 | xargs kill` (Mac/Linux) or `netstat -ano | findstr :5000` (Windows)
 
 ### CORS Errors
+
 - Verify the CLIENT_URL in `.env` matches your frontend URL
 - Check CORS configuration in `server/server.js`
 
 ### Hugging Face API Errors
+
 - Ensure your HUGGING_FACE_TOKEN is valid
 - Check if you have API quota remaining
 - Verify the model endpoint is accessible
@@ -344,5 +384,3 @@ For questions or support, please open an issue in the repository.
 - The open-source community for the amazing tools and libraries
 
 ---
-
-**Built with ❤️ by the Campus Connect Team**
