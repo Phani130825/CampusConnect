@@ -384,3 +384,5 @@ For questions or support, please open an issue in the repository.
 - The open-source community for the amazing tools and libraries
 
 ---
+
+**Built with ❤️ by the Campus Connect Team**
