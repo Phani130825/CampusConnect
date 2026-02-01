@@ -37,8 +37,10 @@ const EntrepreneurDashboard = () => {
     }, []);
 
     useEffect(() => {
-        fetchMyProblems();
-        fetchInvestors();
+        const fetchData = async () => {
+            await Promise.all([fetchMyProblems(), fetchInvestors()]);
+        };
+        fetchData();
     }, [fetchMyProblems, fetchInvestors]);
 
     const fetchSubmissions = async (problemId) => {
