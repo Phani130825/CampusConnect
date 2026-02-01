@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Plus, X, Briefcase, Code, Eye, Send, Check } from 'lucide-react';
 
@@ -18,24 +18,28 @@ const EntrepreneurDashboard = () => {
     const [forwardNote, setForwardNote] = useState('');
     const [selectedInvestor, setSelectedInvestor] = useState('');
 
-    const fetchMyProblems = async () => {
+    const fetchMyProblems = useCallback(async () => {
         try {
             const res = await axios.get('/api/problems/my');
             setProblems(res.data);
-        } catch (err) { console.error(err); }
-    };
+        } catch (err) {
+            console.error(err);
+        }
+    }, []);
 
-    const fetchInvestors = async () => {
+    const fetchInvestors = useCallback(async () => {
         try {
             const res = await axios.get('/api/auth/investors');
             setInvestors(res.data);
-        } catch (err) { console.error(err); }
-    };
+        } catch (err) {
+            console.error(err);
+        }
+    }, []);
 
     useEffect(() => {
         fetchMyProblems();
         fetchInvestors();
-    }, []);
+    }, [fetchMyProblems, fetchInvestors]);
 
     const fetchSubmissions = async (problemId) => {
         try {
@@ -74,10 +78,7 @@ const EntrepreneurDashboard = () => {
 
     const handleAnalyze = async (solutionId, description, problemId) => {
         try {
-            // Optimistic update to show loading state if needed, but here we just wait
             const res = await axios.post('/api/ai/analyze-solution', { description, problemId });
-
-            // Update the submissions state with the new AI analysis
             setSubmissions(prev => prev.map(sub =>
                 sub._id === solutionId ? { ...sub, aiAnalysis: res.data } : sub
             ));
@@ -309,11 +310,15 @@ const EntrepreneurDashboard = () => {
                         <p className="text-slate-600 line-clamp-3 mb-4">{problem.description}</p>
 
                         <div className="flex flex-wrap gap-2 mb-6">
-                            {problem.requiredSkills.map((skill, index) => (
+                            {Array.isArray(problem.requiredSkills) ? problem.requiredSkills.map((skill, index) => (
                                 <span key={index} className="px-2 py-1 bg-slate-100 text-slate-600 text-xs font-medium rounded">
                                     {skill}
                                 </span>
-                            ))}
+                            )) : (
+                                <span className="px-2 py-1 bg-slate-100 text-slate-600 text-xs font-medium rounded">
+                                    {problem.requiredSkills}
+                                </span>
+                            )}
                         </div>
 
                         <div className="flex items-center justify-between pt-4 border-t border-slate-100">
