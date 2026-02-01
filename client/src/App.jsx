@@ -7,7 +7,7 @@ import StudentDashboard from './pages/Dashboard/StudentDashboard';
 import EntrepreneurDashboard from './pages/Dashboard/EntrepreneurDashboard';
 import InvestorDashboard from './pages/Dashboard/InvestorDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
-import { useAuth } from './context/AuthContext';
+import { useAuth } from './context/useAuth';
 
 const DashboardRedirect = () => {
   const { user } = useAuth();

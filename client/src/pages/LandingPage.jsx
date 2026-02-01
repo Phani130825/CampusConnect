@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { 
+import { useAuth } from '../context/useAuth';
+import {
     ArrowRight, Users, Briefcase, TrendingUp, ChevronRight, Hexagon,
-    Target, Lightbulb, Rocket, CheckCircle2, Code, Award, 
+    Target, Lightbulb, Rocket, CheckCircle2, Code, Award,
     Globe, Shield, Zap, MessageSquare, Star, BarChart3
 } from 'lucide-react';
 
@@ -102,7 +102,7 @@ const LandingPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
                         {/* Connector Lines */}
                         <div className="hidden md:block absolute top-20 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200"></div>
-                        
+
                         <ProcessCard
                             step="1"
                             icon={<Target className="w-8 h-8" />}
@@ -249,24 +249,24 @@ const LandingPage = () => {
                     <p className="text-xl text-slate-300 mb-10 leading-relaxed">
                         Join thousands of students, entrepreneurs, and investors building the future of innovation
                     </p>
-                    
+
                     {!user && (
                         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                            <Link 
-                                to="/register" 
+                            <Link
+                                to="/register"
                                 className="w-full sm:w-auto px-10 py-4 bg-blue-600 text-white rounded-lg font-bold shadow-xl hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
                             >
                                 Create Free Account <ArrowRight size={20} />
                             </Link>
-                            <Link 
-                                to="/login" 
+                            <Link
+                                to="/login"
                                 className="w-full sm:w-auto px-10 py-4 bg-white text-slate-900 rounded-lg font-bold shadow-xl hover:bg-slate-100 transition-all"
                             >
                                 Sign In
                             </Link>
                         </div>
                     )}
-                    
+
                     <div className="mt-12 flex flex-wrap justify-center gap-8 text-sm text-slate-400">
                         <div className="flex items-center gap-2">
                             <CheckCircle2 size={16} className="text-green-400" />

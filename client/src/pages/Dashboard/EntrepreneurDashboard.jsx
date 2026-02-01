@@ -6,7 +6,6 @@ const EntrepreneurDashboard = () => {
     const [problems, setProblems] = useState([]);
     const [isCreating, setIsCreating] = useState(false);
     const [formData, setFormData] = useState({ title: '', description: '', domain: '', requiredSkills: '' });
-    const [loading, setLoading] = useState(true);
 
     // Submissions State
     const [activeProblem, setActiveProblem] = useState(null);
@@ -28,7 +27,7 @@ const EntrepreneurDashboard = () => {
         try {
             const res = await axios.get('/api/problems/my');
             setProblems(res.data);
-        } catch (err) { console.error(err); } finally { setLoading(false); }
+        } catch (err) { console.error(err); }
     };
 
     const fetchInvestors = async () => {
