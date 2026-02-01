@@ -18,11 +18,6 @@ const EntrepreneurDashboard = () => {
     const [forwardNote, setForwardNote] = useState('');
     const [selectedInvestor, setSelectedInvestor] = useState('');
 
-    useEffect(() => {
-        fetchMyProblems();
-        fetchInvestors();
-    }, []);
-
     const fetchMyProblems = async () => {
         try {
             const res = await axios.get('/api/problems/my');
@@ -36,6 +31,11 @@ const EntrepreneurDashboard = () => {
             setInvestors(res.data);
         } catch (err) { console.error(err); }
     };
+
+    useEffect(() => {
+        fetchMyProblems();
+        fetchInvestors();
+    }, []);
 
     const fetchSubmissions = async (problemId) => {
         try {
