@@ -12,8 +12,8 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-# Define build argument and set it as environment variable
-ARG VITE_API_URL
+# Define build argument with default
+ARG VITE_API_URL=http://localhost:5000
 ENV VITE_API_URL=$VITE_API_URL
 
 # Build the application
@@ -25,6 +25,16 @@ FROM nginx:alpine
 # Copy built files from build stage to nginx public directory
 COPY --from=build /usr/src/app/dist /usr/share/nginx/html
 
+# Copy custom nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Create env config script for runtime environment variables
+RUN echo '#!/bin/sh' > /docker-entrypoint.d/40-env-config.sh && \
+    echo 'if [ -n "$VITE_API_URL" ]; then' >> /docker-entrypoint.d/40-env-config.sh && \
+    echo '  echo "window.ENV = { VITE_API_URL: \"$VITE_API_URL\" };" > /usr/share/nginx/html/env-config.js' >> /docker-entrypoint.d/40-env-config.sh && \
+    echo 'fi' >> /docker-entrypoint.d/40-env-config.sh && \
+    chmod +x /docker-entrypoint.d/40-env-config.sh
+
 # Expose port 80
 EXPOSE 80
 
@@ -32,5 +42,5 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
     CMD wget --quiet --tries=1 --spider http://localhost:80 || exit 1
 
-# Start nginx
+# Start nginx (entrypoint scripts will run automatically)
 CMD ["nginx", "-g", "daemon off;"]
