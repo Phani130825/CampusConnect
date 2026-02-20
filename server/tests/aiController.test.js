@@ -1,9 +1,13 @@
 const request = require('supertest');
 const app = require('../server');
 const { analyzeSolutionViability, calculateSkillMatch, generateRecommendations } = require('../services/recommendationService');
+const User = require('../models/User');
 
 // Mock the service layer
 jest.mock('../services/recommendationService');
+
+// Mock User model
+jest.mock('../models/User');
 
 // Mock authentication middleware
 jest.mock('../middleware/authMiddleware', () => (req, res, next) => {
@@ -151,6 +155,15 @@ describe('AI Controller Tests', () => {
 
     describe('GET /api/ai/recommendations', () => {
         test('should return personalized recommendations', async () => {
+            const mockStudent = {
+                userId: 'test-user-123',
+                role: 'student',
+                profile: {
+                    skills: ['React Native', 'JavaScript'],
+                    bio: 'Experienced mobile developer'
+                }
+            };
+
             const mockRecommendations = [
                 {
                     problem: {
@@ -170,6 +183,7 @@ describe('AI Controller Tests', () => {
                 }
             ];
 
+            User.findById.mockResolvedValue(mockStudent);
             generateRecommendations.mockResolvedValue(mockRecommendations);
 
             const response = await request(app)
@@ -177,13 +191,12 @@ describe('AI Controller Tests', () => {
 
             expect(response.status).toBe(200);
             expect(response.body).toEqual(mockRecommendations);
-            expect(generateRecommendations).toHaveBeenCalledWith(
-                expect.objectContaining({ userId: 'test-user-123' })
-            );
+            expect(User.findById).toHaveBeenCalledWith('test-user-123');
+            expect(generateRecommendations).toHaveBeenCalledWith(mockStudent);
         });
 
         test('should return empty array if student not found', async () => {
-            generateRecommendations.mockResolvedValue([]);
+            User.findById.mockResolvedValue(null);
 
             const response = await request(app)
                 .get('/api/ai/recommendations');
@@ -193,6 +206,16 @@ describe('AI Controller Tests', () => {
         });
 
         test('should return 500 if recommendation generation fails', async () => {
+            const mockStudent = {
+                userId: 'test-user-123',
+                role: 'student',
+                profile: {
+                    skills: ['React Native', 'JavaScript'],
+                    bio: 'Experienced mobile developer'
+                }
+            };
+
+            User.findById.mockResolvedValue(mockStudent);
             generateRecommendations.mockRejectedValue(new Error('Database error'));
 
             const response = await request(app)
