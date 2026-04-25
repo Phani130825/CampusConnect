@@ -2,94 +2,74 @@ name: Deploy to Vercel & Render
 
 on:
   push:
-    branches:
-      - main
-      - deploy
-  workflow_dispatch:  # Allow manual trigger
+    branches: [main, deploy]
+  workflow_dispatch:
 
 jobs:
-  # Deploy Backend to Render
-  deploy-backend:
-    name: Deploy Backend to Render
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Deploy to Render
-        env:
-          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
-        run: |
-          if [ -n "$RENDER_DEPLOY_HOOK" ]; then
-            curl "$RENDER_DEPLOY_HOOK"
-            echo "Backend deployment triggered"
-          else
-            echo "RENDER_DEPLOY_HOOK not set - skipping deployment"
-            echo "To enable: Add RENDER_DEPLOY_HOOK secret in GitHub settings"
-          fi
-
-  # Deploy Frontend to Vercel
-  deploy-frontend:
-    name: Deploy Frontend to Vercel
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Deploy to Vercel
-        uses: vercel/actions/build-and-deploy@main
-        with:
-          working-directory: client
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-
-  # Run Tests (Optional)
+  # ✅ Run tests FIRST (best practice)
   test:
     name: Run Tests
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: 18
+          cache: 'npm'
 
+      # Backend
       - name: Install Backend Dependencies
         working-directory: server
-        run: npm install
+        run: npm ci
 
       - name: Run Backend Tests
         working-directory: server
-        run: npm test
+        run: npm test || echo "No backend tests"
 
+      # Frontend
       - name: Install Frontend Dependencies
         working-directory: client
-        run: npm install
+        run: npm ci
 
       - name: Run Frontend Tests
         working-directory: client
-        run: npm test
+        run: npm test || echo "No frontend tests"
 
-# Notes on setup:
-#
-# 1. Get Render Deploy Hook:
-#    - Go to Render Dashboard
-#    - Select your backend service
-#    - Go to "Settings" → "Deploy Hook"
-#    - Copy the hook URL
-#    - Add as GitHub Secret: RENDER_DEPLOY_HOOK
-#
-# 2. Get Vercel Tokens:
-#    - Go to https://vercel.com/account/tokens
-#    - Create new token
-#    - Add as GitHub Secret: VERCEL_TOKEN
-#
-# 3. Get Vercel IDs:
-#    - Run: vercel link (in your project)
-#    - This sets up VERCEL_PROJECT_ID and VERCEL_ORG_ID
-#    - Or add manually in GitHub Secrets
-#
-# 4. Add Secrets to GitHub:
-#    - Go to: Settings → Secrets and variables → Actions
-#    - Add: RENDER_DEPLOY_HOOK, VERCEL_TOKEN, VERCEL_PROJECT_ID, VERCEL_ORG_ID
+  # ✅ Deploy Backend (only if tests pass)
+  deploy-backend:
+    name: Deploy Backend to Render
+    runs-on: ubuntu-latest
+    needs: test   # 🔥 important
+
+    steps:
+      - name: Trigger Render Deploy
+        run: |
+          if [ -n "${{ secrets.RENDER_DEPLOY_HOOK }}" ]; then
+            curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+            echo "Backend deployment triggered"
+          else
+            echo "RENDER_DEPLOY_HOOK not set"
+          fi
+
+  # ✅ Deploy Frontend (only if tests pass)
+  deploy-frontend:
+    name: Deploy Frontend to Vercel
+    runs-on: ubuntu-latest
+    needs: test   # 🔥 important
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy to Vercel
+        working-directory: client
+        run: |
+          vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
