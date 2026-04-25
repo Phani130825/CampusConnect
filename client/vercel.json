@@ -17,10 +17,6 @@
       "example": "https://campusconnect-7wum.onrender.com"
     }
   },
-  "buildCache": {
-    "node_modules": true,
-    "dist": true
-  },
   "headers": [
     {
       "source": "/assets/*",
