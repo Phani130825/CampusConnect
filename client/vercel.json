@@ -14,7 +14,7 @@
   "env": {
     "VITE_API_URL": {
       "description": "Backend API URL for the frontend",
-      "example": "https://your-backend.onrender.com"
+      "example": "https://campusconnect-7wum.onrender.com"
     }
   },
   "buildCache": {
