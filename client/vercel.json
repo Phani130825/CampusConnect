@@ -11,12 +11,6 @@
       "destination": "/index.html"
     }
   ],
-  "env": {
-    "VITE_API_URL": {
-      "description": "Backend API URL for the frontend",
-      "example": "https://campusconnect-7wum.onrender.com"
-    }
-  },
   "headers": [
     {
       "source": "/assets/*",
