@@ -25,15 +25,29 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Middleware
-app.use(express.json());
-app.use(cookieParser());
+// CORS Configuration - Allow multiple origins
+const allowedOrigins = [
+    'http://localhost:5173',           // Local development
+    'http://localhost:3000',           // Alternative local port
+    'https://connectentrepreneur.vercel.app', // Production frontend
+    process.env.CLIENT_URL             // From environment variable (if set)
+].filter(Boolean); // Remove undefined values
+
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
-    credentials: true
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.warn(`[CORS] Blocked request from origin: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    optionsSuccessStatus: 200
 }));
 
-// Database Connection
+// Middleware
 if (process.env.NODE_ENV !== 'test') {
     mongoose.connect(process.env.MONGO_URI)
         .then(() => console.log('MongoDB Connected'))
