@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const { startKeepAlive } = require('./utils/keepAlive');
 
 dotenv.config();
 
@@ -67,10 +68,16 @@ app.use((req, res) => {
 });
 
 if (require.main === module) {
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
         console.log('Routes loaded and server ready.');
         console.log('AI Controller configured with new HF Router API.');
+        
+        // Start keep-alive service in production to prevent Render spin-down
+        if (process.env.NODE_ENV === 'production') {
+            console.log('[Keep-Alive] Starting keep-alive service for 24/7 uptime...');
+            startKeepAlive(`http://localhost:${PORT}/health`);
+        }
     });
 }
 

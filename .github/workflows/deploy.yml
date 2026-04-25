@@ -1,0 +1,95 @@
+name: Deploy to Vercel & Render
+
+on:
+  push:
+    branches:
+      - main
+      - deploy
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  # Deploy Backend to Render
+  deploy-backend:
+    name: Deploy Backend to Render
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy to Render
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ -n "$RENDER_DEPLOY_HOOK" ]; then
+            curl "$RENDER_DEPLOY_HOOK"
+            echo "Backend deployment triggered"
+          else
+            echo "RENDER_DEPLOY_HOOK not set - skipping deployment"
+            echo "To enable: Add RENDER_DEPLOY_HOOK secret in GitHub settings"
+          fi
+
+  # Deploy Frontend to Vercel
+  deploy-frontend:
+    name: Deploy Frontend to Vercel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy to Vercel
+        uses: vercel/actions/build-and-deploy@main
+        with:
+          working-directory: client
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+
+  # Run Tests (Optional)
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Backend Dependencies
+        working-directory: server
+        run: npm install
+
+      - name: Run Backend Tests
+        working-directory: server
+        run: npm test
+
+      - name: Install Frontend Dependencies
+        working-directory: client
+        run: npm install
+
+      - name: Run Frontend Tests
+        working-directory: client
+        run: npm test
+
+# Notes on setup:
+#
+# 1. Get Render Deploy Hook:
+#    - Go to Render Dashboard
+#    - Select your backend service
+#    - Go to "Settings" → "Deploy Hook"
+#    - Copy the hook URL
+#    - Add as GitHub Secret: RENDER_DEPLOY_HOOK
+#
+# 2. Get Vercel Tokens:
+#    - Go to https://vercel.com/account/tokens
+#    - Create new token
+#    - Add as GitHub Secret: VERCEL_TOKEN
+#
+# 3. Get Vercel IDs:
+#    - Run: vercel link (in your project)
+#    - This sets up VERCEL_PROJECT_ID and VERCEL_ORG_ID
+#    - Or add manually in GitHub Secrets
+#
+# 4. Add Secrets to GitHub:
+#    - Go to: Settings → Secrets and variables → Actions
+#    - Add: RENDER_DEPLOY_HOOK, VERCEL_TOKEN, VERCEL_PROJECT_ID, VERCEL_ORG_ID

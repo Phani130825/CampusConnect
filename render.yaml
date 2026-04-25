@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: connectors-backend
+    env: node
+    buildCommand: npm install && npm start
+    startCommand: npm start
+    plan: free
+    autoDeploy: true
+    
+    # Environment variables
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false  # Set this in Render dashboard secrets
+      - key: CLIENT_URL
+        value: https://your-frontend.vercel.app
+      - key: JWT_SECRET
+        sync: false  # Set this in Render dashboard secrets
+      - key: HUGGINGFACE_API_KEY
+        sync: false  # Set this in Render dashboard secrets
+      - key: HEALTH_CHECK_URL
+        value: https://your-backend.onrender.com/health
+    
+    # Health check configuration
+    healthCheckPath: /health
+    healthCheckInterval: 30
+    healthCheckTimeout: 5
+    healthCheckUnhealthyThreshold: 3
+    
+    # Disk space and memory
+    disk:
+      name: render-disk
+      mountPath: /mnt/data
+      sizeGb: 1
+    
+    # PostgreSQL database (optional - remove if using MongoDB)
+    # databases:
+    #   - name: connectors-db
+    #     databaseName: connectors
+    #     user: connectors_user
+    #     region: oregon
+
+databases:
+  # Using MongoDB Atlas instead (external service)
+  # Connect your MongoDB Atlas cluster in Render dashboard
