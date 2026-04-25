@@ -13,15 +13,25 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust proxy - CRITICAL for Render (uses reverse proxy)
+app.set('trust proxy', 1);
+
 // Security Middleware
 app.use(helmet());
 app.use(morgan('dev'));
 
-// Rate Limiting
+// Body & Cookie Parsing - MUST come before routes
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// Rate Limiting - with proxy trust fix
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // limit each IP to 100 requests per windowMs
-    message: 'Too many requests from this IP, please try again after 15 minutes'
+    message: 'Too many requests from this IP, please try again after 15 minutes',
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 app.use('/api/', limiter);
 
@@ -47,17 +57,15 @@ app.use(cors({
     optionsSuccessStatus: 200
 }));
 
-// Middleware
+// Database Connection
 if (process.env.NODE_ENV !== 'test') {
     mongoose.connect(process.env.MONGO_URI)
         .then(() => console.log('MongoDB Connected'))
         .catch(err => console.error('MongoDB Connection Error:', err));
 }
 
-// Routes (Placeholders for now)
+// Routes
 const problemRoutes = require('./routes/problemRoutes');
-console.log('Problem Routes Type:', typeof problemRoutes);
-console.log('Problem Routes Stack:', problemRoutes.stack ? problemRoutes.stack.length : 'Not a router');
 
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/problems', problemRoutes);

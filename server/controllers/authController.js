@@ -4,7 +4,17 @@ const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
     try {
+        // Validate request body
+        if (!req.body) {
+            return res.status(400).json({ message: 'Request body is empty' });
+        }
+
         const { name, email, password, role, profile } = req.body;
+
+        // Validate required fields
+        if (!email || !password || !name) {
+            return res.status(400).json({ message: 'Name, email, and password are required' });
+        }
 
         let user = await User.findOne({ email });
         if (user) {
@@ -28,6 +38,11 @@ exports.register = async (req, res) => {
             userId: user._id,
             role: user.role
         };
+
+        if (!process.env.JWT_SECRET) {
+            console.error('[REGISTER] JWT_SECRET is not set!');
+            return res.status(500).json({ message: 'Server configuration error' });
+        }
 
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
 
@@ -70,6 +85,11 @@ exports.login = async (req, res) => {
             userId: user._id,
             role: user.role
         };
+
+        if (!process.env.JWT_SECRET) {
+            console.error('[LOGIN] JWT_SECRET is not set!');
+            return res.status(500).json({ message: 'Server configuration error' });
+        }
 
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
         console.log('[LOGIN] Token generated successfully for user:', user.email);
