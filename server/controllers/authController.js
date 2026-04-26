@@ -46,7 +46,12 @@ exports.register = async (req, res) => {
 
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-        res.cookie('token', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+        res.cookie('token', token, { 
+            httpOnly: true,
+            secure: true,
+            sameSite: 'None',
+            maxAge: 24 * 60 * 60 * 1000 
+        });
         res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
     } catch (err) {
         console.error(err.message);
@@ -94,7 +99,12 @@ exports.login = async (req, res) => {
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
         console.log('[LOGIN] Token generated successfully for user:', user.email);
 
-        res.cookie('token', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+        res.cookie('token', token, { 
+            httpOnly: true,
+            secure: true,
+            sameSite: 'None',
+            maxAge: 24 * 60 * 60 * 1000 
+        });
         res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
     } catch (err) {
         console.error('[LOGIN] ERROR:', err);
